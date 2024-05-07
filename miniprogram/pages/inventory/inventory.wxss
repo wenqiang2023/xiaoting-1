@@ -1,0 +1,60 @@
+/* pages/mainpage/mainpage.wxss */
+page {
+  height: 100%;
+}
+
+.top {
+  position: relative;
+  top: 0;
+  width: 100%;
+}
+
+.mid {
+  flex: 1;
+  overflow: scroll;
+}
+
+.bottom {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.topContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.bottomContent {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.search {
+  position: relative;
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: center; */
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cloth {
+  width: 80%;
+}
+
+.manage {
+  width: 100%;
+}
+
+.choose {
+  height: max-content;
+  justify-content: center;
+}
+
+.van-card-full .van-card {
+  background-color: white;
+}

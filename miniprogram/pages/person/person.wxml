@@ -1,0 +1,36 @@
+<!--pages/person/person.wxml-->
+<!-- <view class="top" bind:tap="onLogin">
+  <image class="img" src="{{avatarUrl}}"/>
+  <view class="nickname"> 
+  <text>{{user_name}}</text> 
+  </view>
+</view>
+
+
+<van-cell icon="star" title="我的收藏" is-link />
+<van-cell title="单元格" is-link />
+<van-cell title="单元格" is-link />
+<van-cell title="单元格" is-link />
+
+<van-popup class="login" show="{{ showLogin }}" bind:close="onCloseLogin"   round
+  custom-style="height: aspectFit;padding:3%">
+  <view class="loginItem">
+    <text>头像：</text>
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+    <image class="img" src="{{avatarUrl}}"/>
+  </button>
+  </view>
+  <van-divider />
+
+  <view class="loginItem">
+    <text>昵称：</text>
+    <input bindinput='getInputValue' type="nickname" class="weui-input" placeholder="请输入昵称"/>   
+  </view>
+
+  <view class="loginButton">
+  <van-button round type="warning" bind:click="onCloseLogin">提交</van-button>
+  </view>
+
+</van-popup>
+<button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">123</button> -->
+<text>开发中~</text>

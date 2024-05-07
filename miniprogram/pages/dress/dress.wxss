@@ -1,0 +1,28 @@
+/* pages/mainpage/index.wxss */
+page{
+    height: 100%;
+    background-color:rgb(255, 255, 255);
+}
+.top{
+  height: 4%;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2%;
+}
+
+.mid {
+  flex: 1;
+  overflow: scroll;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+}
+
+.filterBottom{
+  display: flex;
+  flex-direction: row;
+}

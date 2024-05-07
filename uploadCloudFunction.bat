@@ -1,0 +1,1 @@
+"D:\app\微信web开发者工具\cli.bat" cloud functions deploy --e cloud1-5gxwx8k68bce2e52 --n quickstartFunctions --r --project "F:\hanxiaoting" --report_first --report

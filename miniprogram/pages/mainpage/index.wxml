@@ -1,0 +1,37 @@
+<!--pages/mainpage/index.wxml-->
+<van-search
+  value="{{ value }}"
+  placeholder="请输入搜索关键词"
+  bind:search="onSearch"
+/>
+<view class="top">
+  <view>
+    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/back.png"  style="height: 100%;" mode="heightFix"/>
+  </view>
+
+  <view>  
+    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/calender.png"  style="height: 100%;" mode="heightFix"/>
+    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Filter.png"  style="height: 100%;" mode="heightFix"  bind:tap="onChangeFilter"/>
+    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Column3.png"  style="height: 100%;" mode="heightFix"/>
+  </view>
+</view>
+
+<van-dropdown-menu>
+  <van-dropdown-item value="{{ value1 }}" options="{{ option1 }}" bind:change="onChange1"/>
+  <van-dropdown-item value="{{ value2 }}" options="{{ option2 }}" bind:change="onChange2"/>
+  <van-dropdown-item value="{{ value3 }}" options="{{ option3 }}" bind:change="onChange3"/>
+</van-dropdown-menu>
+
+<view class="mid">
+    <van-grid column-num="3">
+      <van-grid-item use-slot wx:for="{{ Data_Dresses }}" wx:key="index"
+      wx:if="{{(((item.Dress_class == option1[value1].text)||(value1 == 0))&&((item.Dress_color == option2[value2].text)||(value2 == 0))&&((item.Dress_gender == option3[value3].text)||(value3 == 0)))}}"
+      bind:click="onTurnPage" data-index="{{ index }}">
+        <image
+          class="img"
+          src="{{item.tempURL}}"
+        />
+      </van-grid-item>
+    </van-grid> 
+</view>
+

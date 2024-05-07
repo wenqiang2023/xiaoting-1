@@ -1,0 +1,49 @@
+<!--pages/clothInfo/cloth.wxml-->
+<swiper
+    class="swiper"
+    autoplay="{{false}}"
+    circular="{{true}}"
+    indicator-dots="{{true}}"
+>
+    <swiper-item class="sp_item" wx:for="{{imageURLs}}">
+    <image class="img" mode='aspectFit' src="{{item}}"/>
+    <!-- mode="aspectFit" -->
+    </swiper-item>
+</swiper>
+
+<van-goods-action>
+  <van-goods-action-icon icon="chat-o" text="客服" bind:click="onClickIcon" />
+  <van-goods-action-icon icon="{{star}}" text="收藏" bind:click="onClickIcon2" />
+  <van-goods-action-button text="预约" bind:click="onClickButton" />
+</van-goods-action>
+
+<van-calendar 
+    show="{{ show }}" 
+    show-subtitle="{{false}}"
+    min-date="{{ minDate }}"
+    max-date="{{ maxDate }}"
+    bind:close="onCloseCalender"
+    color="#9d2024"
+    bind:confirm="onClickConfirm"
+    formatter="{{formatter}}" />
+
+<van-dialog
+  use-slot
+  title="{{msg}}"
+  show="{{ showQR }}"
+  confirmButtonText="关闭"
+  bind:close="onClose"
+>
+  <image src="../../images/QR.jpg" show-menu-by-longpress="{{true}}" mode="aspectFit"/>
+</van-dialog>
+
+<van-dialog
+  use-slot
+  title="{{msg2}}"
+  show="{{ showQR2 }}"
+  confirmButtonText="关闭"
+  bind:close="onClose2"
+>
+  <image src="../../images/QR.jpg" show-menu-by-longpress="{{true}}" mode="aspectFit"/>
+</van-dialog>
+

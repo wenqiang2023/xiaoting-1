@@ -1,0 +1,48 @@
+<!--pages/mainpage/index.wxml-->
+<view class="top">
+  <view>
+    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Column{{column}}.png?{{random}}"  style="height: 100%;" mode="heightFix" bind:tap="onTapColumn"/>
+  </view>
+  <view>  
+    <!-- <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Calender.png?{{random}}"  style="height: 100%;" mode="heightFix"  bind:tap="onTapCalender"/> -->
+    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Filter.png?{{random}}"  style="height: 100%;" mode="heightFix"  bind:tap="onTapFilter"/>
+  </view>
+</view>
+
+<van-tabs sticky active="{{ active }}" bind:change="onChangeTab" >
+  <van-tab wx:for="{{option1}}" wx:key="index" title="{{item.text}}">
+  </van-tab>
+</van-tabs>
+
+<view class="mid">
+    <van-grid column-num="{{column}}" gutter="0px">
+      <van-grid-item use-slot wx:for="{{ Data_Dresses }}" wx:key="index"
+      wx:if="{{((item.Dress_class == active.title)||(active.index == 0))}}"
+      bind:click="onTurnPage" data-index="{{ index }}">
+        <image
+          class="img"
+          src="{{item.tempURL}}?{{random}}"
+          lazy-load="{{true}}"
+          mode="widthFix"
+        />
+      </van-grid-item>
+    </van-grid> 
+</view>
+
+<van-calendar show="{{ showFilter }}" round="false" position="bottom"   type="range"
+bind:close="onCloseFilter"  bind:confirm="onConfirmFilter"
+/>
+
+<van-popup
+  show="{{ showCalender }}"
+  round
+  position="bottom"
+  custom-style="height: 20%;width:100%"
+  bind:close="onCloseCalender"
+>
+  <view class="filterBottom">
+    <van-button round color="#7232dd" type="default" style="flex: 1;">重置</van-button>
+    <van-button round color="#7232dd" type="default" style="flex: 1;">确定</van-button>
+  </view>
+
+</van-popup>

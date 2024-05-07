@@ -1,0 +1,18 @@
+/* pages/clothInfo/cloth.wxss */
+.img{
+    width: 100%;
+    height: 100%;
+}
+
+.title{
+    font-size: 500px;
+}
+
+.info{
+    height: 200px;
+}
+
+.swiper{
+    height: 750px;
+    width: 100%;
+}

@@ -1,0 +1,50 @@
+<!--pages/add/add.wxml-->
+<van-nav-bar title=""custom-style="padding-top:0px" 
+    left-text="取消" 
+    right-text="确认"
+    bind:click-left="onClickLeft"
+    bind:click-right="onClickRight">
+</van-nav-bar>
+
+<van-cell-group>
+  <van-field
+    value="{{name}}"
+    label="名字"
+    placeholder="请输入衣服名字"
+    size="large"
+    input-align="right"
+    bind:change="onChangeName"
+  />
+    <van-field
+    value="{{class}}"
+    label="类型"
+    placeholder="请输入衣服类型/朝代"
+    size="large"
+    input-align="right"
+    bind:change="onChangeClass"
+  />
+    <van-field
+    value="{{color}}"
+    label="颜色"
+    placeholder="请输入衣服颜色（大致颜色）"
+    size="large"
+    input-align="right"
+    bind:change="onChangeColor"
+  />
+    <van-field
+    value="{{gender}}"
+    label="性别"
+    placeholder="请输入男/女装"
+    size="large"
+    input-align="right"
+    bind:change="onChangeGender"
+  />
+</van-cell-group>
+<van-cell title="照片" value="预览图放第一个~" size="large" />
+<van-uploader
+ file-list="{{ fileList }}"
+ bind:after-read="afterRead"
+ catch:delete="deleteImg"
+ multiple="true"
+ deletable="true" 
+ preview-size="130px"/>
