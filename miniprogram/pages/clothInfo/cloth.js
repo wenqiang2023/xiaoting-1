@@ -7,9 +7,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-    id:'',
-    name:"",
-    imageURLs:[],
+    clothing:{price:''},
+    orderList:[],
     Data_Deals:[],
     show:false,
     showQR:false,
@@ -20,10 +19,6 @@ Page({
     msg:[],
     star:"star-o",
     formatter(day) {
-      if (day.type === 'selected') {
-        day.bottomInfo = '预约';
-        console.log(day)
-      }
       return day;
     },
   },
@@ -34,42 +29,64 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    var id = Number(options.clothId)
-    var Data_Deals = globalData.Data_Deals.filter(item => item.Dress_id == id)
-    console.log(Data_Deals.filter(item => item.Dress_id == id))
-    this.setData({
-      Data_Deals:Data_Deals,
-      formatter:function( day ){
-      let week = day.date.getDay()
-      var getMonth = day.date.getMonth()+1
-      var getDate = day.date.getDate()
-      for(let index in Data_Deals)
-      {
-        if((getMonth == Data_Deals[index].month)&&(getDate == Data_Deals[index].Day)&&(Data_Deals[index].reserved == 'true'))
-        {
-          day.type = 'disabled'
-          day.bottomInfo = '被预约'
-        }
-      }
-      return day;
-      }
-  })
+    const eventChannel = this.getOpenerEventChannel()
+    eventChannel.emit('acceptDataFromOpenedPage', {data: 'test'});
+    eventChannel.emit('someEvent', {data: 'test'});
+    // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
+    eventChannel.on('acceptDataFromOpenerPage', (data)=> {
+      this.setData({
+        clothing:data,
+      })
+      this.setImgs(data)
+      this.getBookingDate(data)
+    })
+    
+ 
 
-    this.setData({
-      id:Number(options.clothId),  //是String类型
-      name:options.clothName,
-      num:options.ImgNum
-    })    
-
-    var {id,num,imageURLs} = this.data
-    for(let index=1; index<(+num+1); index++)
-    {
-      var tmp = id+1;
-      imageURLs.push("https://dress-1324460017.cos.ap-shanghai.myqcloud.com/服装/"+tmp+"/"+index+".jpg")
-    }
-    this.setData({imageURLs})
+   
   },
+  getBookingDate(data){
+    const that=this
+    wx.request({
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getBookingDate',
+      method:'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: JSON.stringify({
+          prod_id:data.clothing_id,
+          prod_type:'服装'
+      }),
+      success(res) { 
+        const data=res.data.result
+        that.setData({
+          formatter:( val )=>{
+            const day=val.date
+            const Y =day.getFullYear(); 
+            const M = (day.getMonth() + 1 < 10 ? '0' + (day.getMonth() + 1) : day.getMonth() + 1);
+            const D = day.getDate() < 10 ? '0' + day.getDate() : day.getDate(); 
+            const date =Y+'-'+M+'-'+D
+            for(let index in data){
+              if(date==data[index].booking_date){
+                val.type = 'disabled'
+                val.bottomInfo = '被预约'
+              }
+            }
+          return val;
+          }
+      })
+      }
+    });
 
+  },
+  setImgs(data){
+    const imgs=[]
+    for(let index=1; index<=data.img_num; index++)
+    {
+      imgs.push("https://dress-1324460017.cos.ap-shanghai.myqcloud.com/服装/"+data.clothing_id+"/"+index+".jpg")
+    }
+    this.setData({imageURLs:imgs})
+  },
   onClickButton(){
     this.setData({
       show:true,
@@ -80,78 +97,56 @@ Page({
       show:false,
     })
   },
-  onClickConfirm(event){
-    var that = this;
-    //获取选取日期
-    this.setData({
-      month:event.detail.getMonth()+1,
-      day:event.detail.getDate(),
-    })
-    console.log(event)
-    var timestamp = Date.parse(new Date());
-    var date = new Date(timestamp);
+  onClickConfirm(e){
+    
+    const that=this
+    const date=e.detail
     //获取年份  
-    var Y =date.getFullYear();
+    const Y =date.getFullYear();
     //获取月份  
-    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1);
+    const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1);
     //获取当日日期 
-    var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate(); 
-    //上传本次预约至数据库
-    var dealId = globalData.Data_Deals.length;
-    dealId = dealId + 1;
-    wx.request({
-      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/insertDealData',
-      data: {
-          dealId:dealId,
-          // Dress_id:this.data.id,
-          Day:this.data.day,
-          month:this.data.month,
-          reserved:true,
-          confirmed:false,
-          Dress_id:this.data.id,
-          Dress_name:this.data.name,
-          Order_date: Y + '年'  + M+ '月' + D+ '日' ,
-          Status:"已预约",
-          tag:"warning",
-          URL:this.data.imageURLs[0],
-      },
-      success(res) {
-        console.log(res.data.result);
-        if (res.data.status == 0) {
-          wx.showToast({
-            title: '提交失败！！！',
-            icon: 'loading',
-            duration: 1500
+    const D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate(); 
+    const dd=Y+'-'+M+'-'+D
+    if (that.data.orderList.indexOf(dd)!=-1){
+      wx.showToast({
+        title: '已预约！',
+        duration: 1500
+      })
+    }else{
+      that.data.orderList.push(dd)
+      wx.request({
+        url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/insertOrderList',
+        method:'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: JSON.stringify({
+            prod_id:this.data.clothing.clothing_id,
+            prod_type:'服装',
+            prod_name:this.data.clothing.name,
+            user_id:globalData.userInfo.openid,
+            booking_date:dd,
+            price:this.data.clothing.price
+        }),
+        success(res) {
+          if (res.data.code != 200) {
+            wx.showToast({
+              title: '提交失败！！！',
+              icon: 'loading',
+              duration: 1500
+            })
+          } else {
+            that.setData({
+              show:false,
+              msg:"请添加客服小姐姐微信确认并支付定金~",
+              showQR:true,
           })
-        } else {
-          wx.showToast({
-            title: '提交成功！！！', //这里打印出登录成功
-            icon: 'success',
-            duration: 1000
-          })
-          globalData.Data_Deals.push({
-            dealId:dealId,
-            Day:that.data.day,
-            month:that.data.month,
-            reserved:true,
-            confirmed:false,
-            Dress_id:that.data.id,
-            Dress_name:that.data.name,
-            Order_date: Y + '年'  + M+ '月' + D+ '日' ,
-            Status:"已预约",
-            tag:"warning",
-            URL:that.data.imageURLs[0],
-          })
-          console.log(globalData.Data_Deals)
-          that.setData({
-            show:false,
-            msg:"请添加客服小姐姐微信确认并支付定金~",
-            showQR:true,
-            globalData:globalData,
-        })
+          }
         }
-      }
-    });
+      });
+    }
+   
   },
 
   onclose(){

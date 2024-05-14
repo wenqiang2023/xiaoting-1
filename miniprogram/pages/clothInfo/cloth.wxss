@@ -13,6 +13,6 @@
 }
 
 .swiper{
-    height: 750px;
+    min-height: 600px;
     width: 100%;
 }

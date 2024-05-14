@@ -1,5 +1,5 @@
 <!--pages/indexpage/indexpage.wxml-->
-<swiper
+<!-- <swiper
     class="swiper"
     autoplay="{{false}}"
     circular="{{true}}"
@@ -7,19 +7,18 @@
 >
     <swiper-item wx:for="{{activitiesURL}}">
     <image class="img" mode='aspectFit' src="{{item}}"/>
-    <!-- mode="aspectFit" -->
+   
     </swiper-item>
-</swiper>
+</swiper> -->
 
 <view class="itemBox">
   <view class="itemBoxCostum">
-  <!-- icon最好放在小程序本地 -->
   <view class="item"  wx:for="{{item_name_Custom}}" wx:key="index" data-index="{{index}}" bind:tap="onClickItem">
     <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/{{pageUrl[index]}}.png/Compress?{{random}}"    style="width: 100%;" mode="widthFix"/>
       <view>{{item}}</view>
     </view>
   </view>
-  <view class="itemBoxManager" wx:if="{{isManager}}">
+  <view class="itemBoxManager" wx:if="{{isManager!=-1}}">
     <view class="item"  wx:for="{{item_name_Manager}}" wx:key="index" data-index="{{index+4}}" bind:tap="onClickItem">
       <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/{{pageUrl[index+4]}}.png/Compress?{{random}}"  style="width: 100%;" mode="widthFix"/>
       <view>{{item}}</view>

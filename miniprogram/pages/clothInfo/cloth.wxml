@@ -12,16 +12,15 @@
 </swiper>
 
 <van-goods-action>
-  <van-goods-action-icon icon="chat-o" text="客服" bind:click="onClickIcon" />
-  <van-goods-action-icon icon="{{star}}" text="收藏" bind:click="onClickIcon2" />
-  <van-goods-action-button text="预约" bind:click="onClickButton" />
+  <!-- <van-goods-action-icon icon="chat-o" text="客服" bind:click="onClickIcon" />
+  <van-goods-action-icon icon="{{star}}" text="收藏" bind:click="onClickIcon2" /> -->
+  <van-goods-action-button text="¥{{clothing.price}}  预约" bind:click="onClickButton" />
 </van-goods-action>
 
 <van-calendar 
     show="{{ show }}" 
     show-subtitle="{{false}}"
     min-date="{{ minDate }}"
-    max-date="{{ maxDate }}"
     bind:close="onCloseCalender"
     color="#9d2024"
     bind:confirm="onClickConfirm"

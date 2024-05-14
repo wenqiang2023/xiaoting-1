@@ -6,204 +6,176 @@ Page({
    * 页面的初始数据
    */
   data: {
-    active: 1,
-    hideChoose: true,
-    showMng: "none",
-    allChecked: false,
-    Data_Deals: [],
-    Data_Dresses: [],
-    result: [],
+    show:false,
+    active: {index: 0, name: 0, title: "待确认"},
+    order_list:[],
+    order:{
+      all_price:0,
+      real_price:0,
+      list:[],
+      remark:'',
+      discount_type:'',
+      dep_price:0,
+      end_price:0,
+      prod_num:0,
+      user_id:[]
+    },
+    order_map:{},
+    order_type:[{name:'待确认'},{name:'已下定'},{name:'待服务'},{name:'待交付'},{name:'已完成'}]
   },
 
-  onChangeCell(event) {
-    this.setData({
-      result: event.detail,
-    });
-  },
 
-  toggle(event) {
-    const { index } = event.currentTarget.dataset;
-    const checkbox = this.selectComponent(`.checkboxes-${index}`);
-    checkbox.toggle();
-    console.log(event.currentTarget.dataset);
-  },
 
-  noop() {},
-
-  onChangeAllChk() {
-    var allChecked = this.data.allChecked;
-    this.setData({ allChecked: !allChecked });
-    if (!allChecked) {
-      var tmp = [];
-      var Data_Deals = this.data.Data_Deals;
-      for (var index in Data_Deals) {
-        tmp.push(index);
-      }
-      this.setData({ result: tmp });
-    } else {
-      this.setData({ result: [] });
-    }
-  },
-
-  onChange(event) {
+  onChangeTab(event) {
     this.setData({ active: event.detail });
+    this.getOrderList()
   },
 
-  onClickLeft() {
-    wx.navigateTo({
-      url: "../add/add",
-      success: function (res) {
-        // 通过eventChannel向被打开页面传送数据
-        res.eventChannel.emit("acceptDataFromOpenerPage", { data: "test" });
-      },
-    });
-  },
-
-  onClickRight() {
-    var hideChoose = this.data.hideChoose;
-    this.setData({
-      hideChoose: !hideChoose,
-    });
-    if (hideChoose) {
-      this.setData({
-        rText: "退出管理",
-        showMng: "block",
-      });
-    } else {
-      this.setData({
-        rText: "管理",
-        showMng: "none",
-      });
-    }
-  },
-
-  onClickButton() {
-    var imageIDs = this.data.imageIDs;
-    var result = this.data.result;
-    var selectedIDs = [];
-    for (var index in result) {
-      selectedIDs.push(imageIDs[result[index]]);
-    }
-    this.setData({ selectedIDs: selectedIDs });
-
-  },
 
   /**
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-    var Data_Deals = globalData.Data_Deals
-    this.setData({
-      Data_Deals:Data_Deals
+    this.getOrderList('user_id')
+  },
+  getOrderList(){
+    const that=this
+    const progress=that.data.active.title
+    const key=progress=='待确认'?'user_id':'order_id'
+    wx.request({
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getOrderList',
+      data: JSON.stringify({"progress":progress,"orderKey":key}),
+      method:'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      success:res=>{
+         const order_map={}
+         const data=res.data.result
+         const order_list=[]
+         let name=''
+         data.forEach(v=>{
+           order_map[v.list_id]=v
+           v.prod_img="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/"+v.prod_type+"/"+v.prod_id+"/1.jpg/Compress";
+           if (v[key]!=name){
+              order_list.push({
+                order_remark:v.order_remark,real_price:v.real_price,all_price:v.all_price,dep_price:v.dep_price,discount_type:v.discount_type,
+                order_id:v.order_id,user_id:v.user_id,user_name:v.user_name,user_img:v.user_img,data:[v]})
+              name=v[key]
+           }else{
+              order_list[order_list.length-1].data.push(v)
+           }
+
+         })
+         that.setData({
+          order_map:order_map,
+          order_list:order_list
+         })
+      }
     })
   },
-
-  onCancel(event) {
-    var index = event.currentTarget.dataset["index"];
-    console.log(this.data.Data_Deals[index]);
-    this.setData({
-      ["Data_Deals[" + index + "].Status"]: "已取消",
-      ["Data_Deals[" + index + "].tag"]: "danger",
-    });
-
+  getOrderListByP(){
+    const that=this
     wx.request({
-      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/updateDealData',
-      data: {
-        reserved:false,
-        confirmed:true,
-        Status:"已取消",
-        tag:"danger",
-        dealId:this.data.Data_Deals[index].dealId,
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getOrderListByP',
+      data: JSON.stringify({"progress":that.data.active.title}),
+      method:'POST',
+      header: {
+        'content-type': 'application/json'
       },
-      success(res) {
-        console.log(res.data.result);
-        if (res.data.status == 0) {
-          wx.showToast({
-            title: '提交失败！！！',
-            icon: 'loading',
-            duration: 1500
-          })
-        } else {
-          wx.showToast({
-            title: '提交成功！！！', //这里打印出登录成功
-            icon: 'success',
-            duration: 1000
-          })
-        }
+      success:res=>{
+         console.log(res.data)
       }
-    });
+    })
   },
+  checkboxChange(e){
+    const data=this.data.order_map
+    const values = e.detail.value
+    const order={
+      all_price:0,
+      real_price:0,
+      list:values,
+      prod_num:values.length,
+      remark:'',
+      discount_type:'',
+      dep_price:0,
+      end_price:0,
+      user_id:[],
+      create_user_id:globalData.userInfo.openid?globalData.userInfo.openid:''
+    }
 
-  onConfirm(event) {
-    var index = event.currentTarget.dataset["index"];
-    console.log(this.data.Data_Deals[index]);
+    values.forEach(v=>{
+       if(order.user_id.indexOf(data[v].user_id)==-1){
+        order.user_id.push(data[v].user_id)
+       }
+       order.all_price+=data[v].price
+
+    })
+    order.real_price=order.all_price
     this.setData({
-      ["Data_Deals[" + index + "].Status"]: "已确认",
-      ["Data_Deals[" + index + "].tag"]: "primary",
-    });
-
-    wx.request({
-      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/updateDealData',
-      data: {
-        reserved:true,
-        confirmed:true,
-        Status:"已确认",
-        tag:"primary",
-        dealId:this.data.Data_Deals[index].dealId,
-      },
-      success(res) {
-        console.log(res.data.result);
-        if (res.data.status == 0) {
-          wx.showToast({
-            title: '提交失败！！！',
-            icon: 'loading',
-            duration: 1500
-          })
-        } else {
-          wx.showToast({
-            title: '提交成功！！！', //这里打印出登录成功
-            icon: 'success',
-            duration: 1000
-          })
-        }
-      }
-    });
+      order:order
+    }
+    )
+  },
+  onSubmit(){
+    this.setData({
+      show:true
+    })
+   
+  },
+  onConfirm(event) {
+   
   },
 
   onComplete(event) {
-    var index = event.currentTarget.dataset["index"];
-    console.log(this.data.Data_Deals[index]);
-    this.setData({
-      ["Data_Deals[" + index + "].Status"]: "已完成",
-      ["Data_Deals[" + index + "].tag"]: "success",
-    });
-
+    
+  },
+  set_real_price(e){
+    this.data.order.real_price=e.detail
+  },
+  set_dep_price(e){
+    this.data.order.dep_price=e.detail
+  },
+  set_remark(e){
+    this.data.order.remark=e.detail
+  },
+  set_discount_type(e){
+    this.data.order.discount_type=e.detail
+  },
+  setOrderData(){
+    const order=this.data.order
+    const that=this
     wx.request({
-      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/updateDealData',
-      data: {
-        reserved:false,
-        confirmed:true,
-        Status:"已完成",
-        tag:"success",
-        dealId:this.data.Data_Deals[index].dealId,
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/setOrderData',
+      data: JSON.stringify(order),
+      method:'POST',
+      header: {
+        'content-type': 'application/json'
       },
-      success(res) {
-        console.log(res.data.result);
-        if (res.data.status == 0) {
-          wx.showToast({
-            title: '提交失败！！！',
-            icon: 'loading',
-            duration: 1500
-          })
-        } else {
-          wx.showToast({
-            title: '提交成功！！！', //这里打印出登录成功
-            icon: 'success',
-            duration: 1000
-          })
-        }
+      success:res=>{
+        that.getOrderList()
       }
-    });
+    })
+  },
+  changeOrderP(e){
+    const data=e.currentTarget.dataset
+    const that=this
+    wx.request({
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/changeOrderP',
+      data: JSON.stringify({"progress":data.p,"order_id":data.o}),
+      method:'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      success:res=>{
+        that.getOrderList()
+      }
+    })
+    
+
+  },
+  onClose(){
+
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

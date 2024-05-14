@@ -1,4 +1,7 @@
-{
+{ 
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "tabBar": {
     "custom": true,
     "color": "#000000",
@@ -83,7 +86,10 @@
     "van-tab": "@vant/weapp/tab/index",
     "van-tabs": "@vant/weapp/tabs/index",
     "van-sticky": "@vant/weapp/sticky/index",
-    "van-divider": "@vant/weapp/divider/index"
+    "van-divider": "@vant/weapp/divider/index",
+    "van-swipe-cell": "@vant/weapp/swipe-cell/index",
+     "van-row": "@vant/weapp/row/index",
+     "van-col": "@vant/weapp/col/index"
   },
   "permission": {
     "scope.userLocation": {

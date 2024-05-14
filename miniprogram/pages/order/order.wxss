@@ -62,3 +62,34 @@ page {
 .desc-class {
   white-space: pre-wrap;
 }
+.van-swipe-cell__right{
+  background-color: red;
+  color: #ffffff;
+  width: 65px;
+  text-align: center;
+  line-height: 0px;
+}
+.van-card{
+  background-color: #ffffff !important;
+}
+.head_p{
+  background-color: #ffffff;
+  padding: 10px 22px 0 22px;
+}
+.head_button{
+  float: right;
+}
+.head_text{
+  font-size: 12px;
+}
+.head_name{
+  line-height: 40px;
+}
+.user_img{
+  width:40px;
+  height:40px;
+}
+.user_list{
+  margin: 10px;
+  border-radius: 5px;
+}

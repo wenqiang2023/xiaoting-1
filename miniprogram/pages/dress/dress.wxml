@@ -10,18 +10,18 @@
 </view>
 
 <van-tabs sticky active="{{ active }}" bind:change="onChangeTab" >
-  <van-tab wx:for="{{option1}}" wx:key="index" title="{{item.text}}">
+  <van-tab wx:for="{{option1}}" wx:key="name" title="{{item.name}}">
   </van-tab>
 </van-tabs>
 
 <view class="mid">
     <van-grid column-num="{{column}}" gutter="0px">
       <van-grid-item use-slot wx:for="{{ Data_Dresses }}" wx:key="index"
-      wx:if="{{((item.Dress_class == active.title)||(active.index == 0))}}"
+      wx:if="{{item.type == active.title||active.title == '全部'}}"
       bind:click="onTurnPage" data-index="{{ index }}">
         <image
           class="img"
-          src="{{item.tempURL}}?{{random}}"
+          src="{{item.tempURL}}"
           lazy-load="{{true}}"
           mode="widthFix"
         />
