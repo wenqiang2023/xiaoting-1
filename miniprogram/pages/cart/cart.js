@@ -1,18 +1,40 @@
 // pages/cart/cart.js
+const globalData = getApp().globalData
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    order_list:[]
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+      this.getOrderList()
+  },
+  getOrderList(){
+    const that=this
 
+    wx.request({
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getOrderListByUser',
+      data: JSON.stringify({"user_id":globalData.userInfo.openid}),
+      method:'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      success:res=>{
+        const data=res.data.result
+        data.forEach(v=>{
+          v.prod_img="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/"+v.prod_type+"/"+v.prod_id+"/1.jpg/Compress";
+        })
+         that.setData({
+          order_list:data
+         })
+      }
+    })
   },
 
   /**
@@ -26,7 +48,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.getTabBar().init();
+
   },
 
   /**

@@ -19,11 +19,11 @@ Component({
         name:'cart',
         url:'/pages/cart/cart'
       },
-      {
-        icon:'user-o',
-        name:'user',
-        url:'/pages/person/person'
-      },
+      // {
+      //   icon:'user-o',
+      //   name:'user',
+      //   url:'/pages/person/person'
+      // },
     ] 
   },
   

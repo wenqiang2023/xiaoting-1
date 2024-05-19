@@ -12,6 +12,7 @@ page {
 .mid {
   flex: 1;
   overflow: scroll;
+  margin-bottom: 82px;
 }
 
 .bottom {
@@ -71,10 +72,11 @@ page {
 }
 .van-card{
   background-color: #ffffff !important;
+  min-height:120px;
 }
 .head_p{
   background-color: #ffffff;
-  padding: 10px 22px 0 22px;
+  padding: 10px 10px 0 10px;
 }
 .head_button{
   float: right;

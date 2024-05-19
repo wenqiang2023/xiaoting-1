@@ -6,7 +6,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    tag_sel:[],
     active:{index: 0, name: 0, title: "全部"},
+    activeSex:'女',
     column:3,
     date:'',
     activeKeyLeft: 0,
@@ -124,6 +126,7 @@ Page({
         data.forEach(v=>{
            if (option1.findIndex((item)=>{return item.name==v.type})==-1){
              v.type='其它'
+            
            }
            v.tempURL="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/服装/"+v.clothing_id+"/1.jpg/Compress";
         })
@@ -146,7 +149,20 @@ Page({
       })
     }
   },
-
+  isShow(item){
+    const sex=this.data.activeSex
+    const active=this.data.active.title
+    const f1=item.type==active||active=='全部'
+    const f2=item.sex==sex
+    console.log(f1&&f2)
+    return f1&&f2
+  },
+  selectTag(e){
+    const value=e.currentTarget.dataset.t
+    this.setData({
+      activeSex:value
+    })
+  },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */

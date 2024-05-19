@@ -1,0 +1,6 @@
+/* pages/bill/bill.wxss */
+.mid {
+  flex: 1;
+  width: 100%;
+  overflow: scroll;
+}

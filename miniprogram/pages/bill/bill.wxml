@@ -1,0 +1,57 @@
+<view>
+  <van-cell-group>
+  <van-field
+    model:value="{{ price }}"
+    placeholder="请输入金额"
+    label="金额"
+    bind:change="onChange"
+    border="{{ false }}"
+  />
+  <van-dropdown-menu>
+     <van-dropdown-item model:value="{{ type }}" options="{{ ty_option }}" />
+     <van-dropdown-item model:value="{{ pay_way }}" options="{{ py_option }}" />
+  </van-dropdown-menu>
+  <van-field
+    model:value="{{ remark }}"
+    placeholder=""
+    label="备注"
+    border="{{ false }}"
+  >
+  <van-button slot="button" size="small" type="primary" bind:click="setOrderBill">
+      添加
+  </van-button>
+  </van-field>
+
+
+</van-cell-group>
+<van-cell-group title="{{'需收:'+real_price+'  已收:'+bill_price+'  尾款:'+end_price}}">
+
+<van-field
+    model:value="{{ real_price }}"
+    center
+    clearable
+    label="需收"
+    placeholder="请输入实际需收的总金额"
+    border="{{ false }}"
+    use-button-slot
+  >
+    <van-button slot="button" size="small" type="primary" bind:click="updateRealPrice">
+      更新
+    </van-button>
+  </van-field>
+ 
+</van-cell-group >
+<van-van-cell-group>
+  <van-cell label="{{item.remark}}" wx:for="{{bill_list}}" wx:key="bill_id">
+  <view slot="title">
+    <view class="van-cell-text">{{item.price}} 
+     <van-tag plain  type="primary">{{item.type}}</van-tag>
+     <van-tag plain  type="primary">{{item.pay_way}}</van-tag>
+    </view>
+  </view>
+  <view slot="right-icon">
+    <van-icon data-id="{{item.bill_id}}" name="delete-o" color="red" bind:click="delOrderBill" />
+  </view>
+</van-cell>
+</van-van-cell-group>
+</view>

@@ -13,15 +13,31 @@
 
 <view class="itemBox">
   <view class="itemBoxCostum">
-  <view class="item"  wx:for="{{item_name_Custom}}" wx:key="index" data-index="{{index}}" bind:tap="onClickItem">
+  <view class="item"  wx:for="{{item_name_Custom}}" wx:key="index" data-index="{{index}}" bindtap="onClickItem">
     <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/{{pageUrl[index]}}.png/Compress?{{random}}"    style="width: 100%;" mode="widthFix"/>
       <view>{{item}}</view>
     </view>
   </view>
   <view class="itemBoxManager" wx:if="{{isManager!=-1}}">
-    <view class="item"  wx:for="{{item_name_Manager}}" wx:key="index" data-index="{{index+4}}" bind:tap="onClickItem">
+    <view class="item"  wx:for="{{item_name_Manager}}" wx:key="index" data-index="{{index+4}}" bindtap="onClickItem">
       <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/{{pageUrl[index+4]}}.png/Compress?{{random}}"  style="width: 100%;" mode="widthFix"/>
       <view>{{item}}</view>
     </view>
   </view>
 </view>
+<van-dialog
+  use-slot
+  title="请使用微信头像和昵称"
+  show="{{ show }}"
+  bind:close="onClose"
+  bind:confirm="setUserInfo"
+>
+<view class="userInfo">
+
+<button class="avatar" open-type="chooseAvatar" bindchooseavatar="chooseavatar">
+    <image  class="avatar_img" src="{{avatarUrl}}"></image>
+  </button>
+
+    <input class="userName" type="nickname" placeholder="请输入昵称" name="nickname" bind:change="onChangeName" />
+    </view>
+</van-dialog>

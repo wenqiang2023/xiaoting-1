@@ -4,8 +4,9 @@
     <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Column{{column}}.png?{{random}}"  style="height: 100%;" mode="heightFix" bind:tap="onTapColumn"/>
   </view>
   <view>  
-    <!-- <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Calender.png?{{random}}"  style="height: 100%;" mode="heightFix"  bind:tap="onTapCalender"/> -->
-    <image src="https://dress-1324460017.cos.ap-shanghai.myqcloud.com/icon/Filter.png?{{random}}"  style="height: 100%;" mode="heightFix"  bind:tap="onTapFilter"/>
+
+    <van-button data-t="男" type="{{activeSex=='男'?'primary':'default'}}" bind:click="selectTag" size="mini">男</van-button>
+    <van-button data-t="女" type="{{activeSex=='女'?'primary':'default'}}" bind:click="selectTag"  size="mini">女</van-button>
   </view>
 </view>
 
@@ -17,7 +18,7 @@
 <view class="mid">
     <van-grid column-num="{{column}}" gutter="0px">
       <van-grid-item use-slot wx:for="{{ Data_Dresses }}" wx:key="index"
-      wx:if="{{item.type == active.title||active.title == '全部'}}"
+      wx:if="{{(active.title=='全部'||item.type==active.title)&&item.sex==activeSex}}"
       bind:click="onTurnPage" data-index="{{ index }}">
         <image
           class="img"

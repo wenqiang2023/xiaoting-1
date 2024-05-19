@@ -1,17 +1,51 @@
 // pages/indexpage/indexpage.js
 var globalData = getApp().globalData
+const COS = require('cos-wx-sdk-v5');
+const cos = new COS({
+  SimpleUploadMethod: 'putObject', 
+  getAuthorization: function (options, callback) {
+      wx.request({
+          url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getMy',
+          data: {
+              key:options.Key,
+              bucket: options.Bucket,
+              region: options.Region,
+          },
+          dataType: 'json',
+          success: function (result) {
+              const data = result.data;
+              const credentials = data && data.credentials;
+              callback({
+                  TmpSecretId: credentials.tmpSecretId,
+                  TmpSecretKey: credentials.tmpSecretKey,  
+                  SecurityToken: credentials.sessionToken,
+                  StartTime: data.startTime, 
+                  ExpiredTime: data.expiredTime, 
+              });
+          }
+      });
+  }
+});
+
+// 接下来可以通过 cos 实例调用 COS 请求。
 Page({
   /**
    * 页面的初始数据
    */
   data: {
+    show:false,
     active:0,
+    imgData:'',
+    avatarUrl:'',
+    userName:'',
     activitiesURL:[
       'https://dress-1324460017.cos.ap-shanghai.myqcloud.com/活动/0.jpg/Scale',
       'https://dress-1324460017.cos.ap-shanghai.myqcloud.com/活动/1.jpg/Scale',
     ],
-    item_name_Custom:['服装','妆造','内景写真','外景写真'],
-    item_name_Manager:['订单管理','财务管理','库存管理','会员管理'],
+    item_name_Custom:['服装'],
+    //item_name_Custom:['服装','妆造','内景写真','外景写真'],
+    //item_name_Manager:['订单管理','财务管理','库存管理','会员管理'],
+    item_name_Manager:['订单管理'],
     pageUrl:['dress','makeup','pic_Indoor','pic_Outdoor','order','finance','inventory','member'],
     isManager:-1,
     openid:''
@@ -22,6 +56,7 @@ Page({
 
   },
   getUserInfo(){
+    const that=this
     const openid=this.data.openid
     wx.request({
       url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getUserInfo',
@@ -31,22 +66,37 @@ Page({
       success(res) {
           if (res.data.length!=0){
             globalData.userInfo=res.data[0]
+          }else{
+            that.setData({
+              show:true
+            })
           }
       }
     })
   },
   setUserInfo(){
-    wx.request({
-      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/setUserInfo',
-      data: JSON.stringify(globalData.userInfo),
-      method:'POST',
-      header: {
-        'content-type': 'application/json'
-      },
-      success(res) {
-          console.log('添加用户信息成功')
+    const avatarUrl=this.data.avatarUrl
+    const name=this.data.userName
+    const that=this
+    if (avatarUrl!='' && name!=''){
+      globalData.userInfo={
+        openid:that.data.openid,
+        name:name,
+        img:'https://dress-1324460017.cos.ap-shanghai.myqcloud.com/avatar/'+that.data.openid+'.jpg'
       }
-    })
+      wx.request({
+        url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/setUserInfo',
+        data: JSON.stringify(globalData.userInfo),
+        method:'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        success(res) {
+            console.log('添加用户信息成功')
+        }
+      })
+    }
+    
   },
   setManager(){
     const openid=this.data.openid
@@ -89,6 +139,31 @@ Page({
       }
     })
   },
+ 
+  chooseavatar(e) {
+    const that=this
+    this.setData({
+      avatarUrl:e.detail.avatarUrl
+    })
+    cos.putObject({
+      Bucket:'dress-1324460017',
+      Region: 'ap-shanghai',
+      Key: "avatar/"+that.data.openid+'.jpg',
+      FilePath: e.detail.avatarUrl,  
+    }, function (err, data) {
+      console.log(err || data);
+    });
+
+
+
+
+  },
+  onChangeName(e){
+    this.setData({
+      userName:e.detail.value
+    })
+
+  },
   changePage(event){
     var index = event.currentTarget.dataset.index
     var pageUrl = this.data.pageUrl
@@ -96,21 +171,17 @@ Page({
       url: '/pages/'+pageUrl[index]+'/'+pageUrl[index],
     })
   },
+  getUser(event) {
+    console.log(event.detail);
+  },
+  onClose() {
+    this.setData({ show: false });
+  },
   onClickItem(event){
     const that=this
     if (!globalData.userInfo){
-      wx.getUserProfile({
-        desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-        success: (res) => {
-          const userInfo=res.userInfo
-          globalData.userInfo={
-             openid:that.data.openid,
-             name:userInfo.nickName,
-             img:userInfo.avatarUrl
-          }
-          that.setUserInfo()
-          that.changePage(event)
-        }
+      that.setData({
+        show:true
       })
     }else{
         that.changePage(event)

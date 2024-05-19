@@ -1,2 +1,24 @@
-<!--pages/cart/cart.wxml-->
-  <text>开发中~</text>
+<view class="mid">
+<text wx:if="{{order_list.length==0}}" >没有订单信息，请先预约。</text>
+<view class="user_list" wx:for="{{order_list}}" wx:key="list_id">
+  <van-card
+  class="background_f"
+  num="1"
+  tag="{{item.prod_type}}"
+  price="{{item.price}}"
+  desc="{{item.progress}}"
+  title="{{item.booking_date}}"
+  thumb="{{ item.prod_img }}"
+  >
+  <view slot="bottom">
+    {{item.user_remark}}
+    <!-- <van-button size="mini">删除</van-button> -->
+  </view>
+  </van-card>
+</view>
+</view>
+
+
+
+
+

@@ -12,6 +12,7 @@
 </swiper>
 
 <van-goods-action>
+  <!-- <button open-type="contact" bindcontact="handleContact">客服</button> -->
   <!-- <van-goods-action-icon icon="chat-o" text="客服" bind:click="onClickIcon" />
   <van-goods-action-icon icon="{{star}}" text="收藏" bind:click="onClickIcon2" /> -->
   <van-goods-action-button text="¥{{clothing.price}}  预约" bind:click="onClickButton" />

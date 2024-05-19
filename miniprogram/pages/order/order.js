@@ -1,11 +1,22 @@
 // pages/mainpage/mainpage.js
 const db = wx.cloud.database()
 const globalData = getApp().globalData
+import Dialog from '@vant/weapp/dialog/dialog';
 Page({
   /**
    * 页面的初始数据
    */
   data: {
+    page_show:false,
+    bill_type_show:false,
+    bill_ts:[
+      { text: '定金', value: '定金' },
+      { text: '尾款', value: '尾款' },
+    ],
+    bill_price:'',
+    bill_type:'尾款',
+    bill_remark:'',
+    bill_show:false,
     show:false,
     active: {index: 0, name: 0, title: "待确认"},
     order_list:[],
@@ -24,8 +35,6 @@ Page({
     order_type:[{name:'待确认'},{name:'已下定'},{name:'待服务'},{name:'待交付'},{name:'已完成'}]
   },
 
-
-
   onChangeTab(event) {
     this.setData({ active: event.detail });
     this.getOrderList()
@@ -36,7 +45,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-    this.getOrderList('user_id')
   },
   getOrderList(){
     const that=this
@@ -74,17 +82,21 @@ Page({
       }
     })
   },
-  getOrderListByP(){
+  setBill(){
+    const order_id=this.data.order_id
+    const price=this.data.bill_price
+    const type=this.data.bill_type
+    const remark=this.data.bill_remark
     const that=this
     wx.request({
-      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/getOrderListByP',
-      data: JSON.stringify({"progress":that.data.active.title}),
+      url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/setBill',
+      data: JSON.stringify({order_id:order_id,price:price,type:type,remark:remark}),
       method:'POST',
       header: {
         'content-type': 'application/json'
       },
       success:res=>{
-         console.log(res.data)
+        that.getOrderList()
       }
     })
   },
@@ -153,9 +165,53 @@ Page({
         'content-type': 'application/json'
       },
       success:res=>{
+        that.setData({
+          order:{
+            all_price:0,
+            real_price:0,
+            list:[],
+            remark:'',
+            discount_type:'',
+            dep_price:0,
+            end_price:0,
+            prod_num:0,
+            user_id:[]
+          }
+        })
         that.getOrderList()
       }
     })
+  },
+  openBill(e){
+    const order_id=e.currentTarget.dataset.oid
+    const real_price=e.currentTarget.dataset.rp
+     wx.navigateTo({
+      url: '../bill/bill?order_id=' + order_id+'&real_price=' + real_price,
+    })
+  },
+  delThis(e){
+    const id=e.currentTarget.dataset.id
+    const that=this
+    Dialog.confirm({
+      message: '删除后不可恢复，是否确认删除！',
+    })
+      .then(() => {
+        wx.request({
+          url: 'https://service-ocfokc81-1324460017.sh.tencentapigw.com/release/delOrderList',
+          data: JSON.stringify({"id":id}),
+          method:'POST',
+          header: {
+            'content-type': 'application/json'
+          },
+          success:res=>{
+            that.getOrderList()
+          }
+        })
+        // on confirm
+      })
+      .catch(() => {
+        // on cancel
+      });
   },
   changeOrderP(e){
     const data=e.currentTarget.dataset
@@ -186,7 +242,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.getOrderList()
   },
 
   /**

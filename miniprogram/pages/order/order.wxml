@@ -15,17 +15,17 @@
 <view class="head_p">
   <van-row>
   <van-col span="4"><image class="user_img" src="{{user_order.user_img}}"/></van-col>
-  <van-col span="8" class="head_name">{{user_order.user_name}}</van-col>
-  <van-col span="12" class="head_name">
+  <van-col span="11" class="head_name">{{user_order.user_name}}</van-col>
+  <van-col span="9" class="head_name">
   <van-button data-p="待服务" data-o="{{user_order.order_id}}"  bind:click="changeOrderP" size="mini" wx:if="{{active.title=='已下定'}}" class="head_button">待服务</van-button>
   <van-button data-p="已完成" data-o="{{user_order.order_id}}" bind:click="changeOrderP" size="mini" class="head_button" wx:if="{{active.title=='待交付'||active.title=='待服务'}}">已完成</van-button>
   <van-button data-p="待交付" data-o="{{user_order.order_id}}" bind:click="changeOrderP"   size="mini" wx:if="{{active.title=='待服务'}}" class="head_button">待交付</van-button>
   </van-col>
 </van-row>
 <van-row wx:if="{{active.title!='待确认'}}">
-  <van-col span="20" class="head_name head_text">需收:{{user_order.real_price}} 已收:{{user_order.dep_price}} 尾款:{{user_order.real_price-user_order.dep_price}}</van-col>
+  <van-col span="20" class="head_name head_text">总量:{{user_order.data.length}} 需收:{{user_order.real_price}} 已收:{{user_order.dep_price}} 尾款:{{user_order.real_price-user_order.dep_price}}</van-col>
   <van-col span="4" class="head_name">
-  <van-button size="mini" class="head_button">记账</van-button>
+  <van-button size="mini" class="head_button" data-oid="{{user_order.order_id}}" data-rp="{{user_order.real_price}}"  bind:click="openBill">记账</van-button>
   </van-col>
 </van-row>
 <van-row wx:if="{{user_order.order_remark != null &&user_order.order_remark!=''}}">
@@ -35,21 +35,20 @@
 </van-row>
 </view>
   <van-card
-  class="background_f"
   wx:for="{{user_order.data}}" 
   wx:for-item="item" 
   wx:key="list_id"
   num="1"
-  tag="{{item.prod_type}}"
+  tag="{{item.prod_type+'.'+item.list_id}}"
   price="{{item.price}}"
   desc="{{item.user_remark}}"
   title="{{item.booking_date}}"
   thumb="{{ item.prod_img }}"
 >
-  <view slot="bottom">
-    <van-button size="mini">删除</van-button>
+  <view slot="bottom" wx:if="{{active.title=='待确认'}}">
+    <van-button size="mini" data-id="{{item.list_id}}" bind:click="delThis">删除</van-button>
   </view>
-  <view slot="footer">
+  <view slot="footer" wx:if="{{active.title=='待确认'}}">
     <checkbox value="{{item.list_id}}" />
   </view>
 </van-card>
@@ -107,6 +106,38 @@ wx:if="{{active.title=='待确认'}}"
   />
 </van-cell-group>
 </van-dialog>
+<van-dialog
+  use-slot
+  show="{{ bill_show }}"
+  show-cancel-button
+  bind:confirm="setBill"
+>
+<van-cell-group>
+  <van-field
+    model:value="{{bill_price}}"
+    label="金额"
+    type="number"
+    placeholder="请输入金额"
+    required
+  />
+  <van-field
+    label="类型"
+    model:value="{{bill_type}}"
+    placeholder="定金或尾款"
+  />
+ 
+
+  <van-field
+    label="备注"
+    model:value="{{bill_remark}}"
+    placeholder=""
+  />
+</van-cell-group>
+  
+
+</van-dialog>
+<van-dialog id="van-dialog" />
+
 
 
 
